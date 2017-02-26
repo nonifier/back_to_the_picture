@@ -10,7 +10,7 @@ std::string Null_Marker::getName() const {
 }
 
 std::string Null_Marker::getInfo() const {
-	return std::string("- Null Marler -");
+	return std::string("");
 }
 
 uint16_t Null_Marker::getSize() const

@@ -19,7 +19,6 @@ std::string Exif::getName() const {
 
 std::string jpeg::Exif::getInfo() const {
 	std::stringstream sstream;
-	sstream << "- Exif -\n";
 	sstream << "marker: " << std::hex << std::showbase 
 		<< io::readSize_t<2>(header.marker) << '\n';
 	sstream << "size: " << io::readSize_t<2>(header.size) << '\n';

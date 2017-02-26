@@ -72,6 +72,7 @@ int main(int argc, const char** argv)
 		while (parser.hasNextMarker())
 		{
 			std::unique_ptr<jpeg::Marker> marker = parser.getNextMarker();
+			std::cout << "# " << marker->getName() << "\n";
 			std::cout << marker->getInfo() << "\n";
 			parser.advanceJpegDaga(marker->getSize());
 		}

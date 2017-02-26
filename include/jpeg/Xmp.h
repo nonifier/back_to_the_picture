@@ -32,7 +32,9 @@ namespace jpeg {
 		} header;
 
 		std::string packet;
-		std::tm createDate;
+
+		std::string extractTag(const std::string& tagName) const;
+		std::tm getCreateDate() const;
 	};
 
 }

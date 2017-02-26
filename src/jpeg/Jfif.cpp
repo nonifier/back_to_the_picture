@@ -18,8 +18,6 @@ std::string Jfif::getName() const {
 
 std::string Jfif::getInfo() const {
 	std::stringstream sstrm;
-
-	sstrm << "- Jfif - \n";
 	sstrm << "SOI: " << std::hex << std::showbase 
 		<< io::readSize_t<2>(header.start_of_image) << "\n";
 	sstrm.flags(0);

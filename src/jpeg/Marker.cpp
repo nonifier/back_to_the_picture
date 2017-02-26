@@ -19,7 +19,6 @@ std::string Marker::getName() const {
 
 std::string Marker::getInfo() const { 
 	std::stringstream strm;
-	strm << "- Marker - \n";
 	strm << std::hex << std::showbase;
 	strm << "marker: " << int(getMarker()) << "\n";
 	strm << "code: " << int(getCode()) << "\n";
