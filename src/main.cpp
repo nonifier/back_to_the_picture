@@ -15,17 +15,39 @@ size_t size(std::fstream& stream)
 	return size_t(stream.tellg());
 }
 
+class Help 
+{
+public:
+	std::ostream& operator<<(std::ostream& o) const {
+		o << "BackToThePicture.exe	fileName creationDate \n";
+		o << "\t-filename: path to Jpeg file\n";
+		o << "\t-creationDate: creation date of the JPEG file (YYYY-MM-DD)\n";
+		return o;
+	}
+};
+
+std::ostream& operator<<(std::ostream& o, const Help& h) {
+	o << h;
+	return o;
+}
+
 int main(int argc, const char** argv)
 {
-	//const char* jpegFileName = "dsc05869_origin_with_date.jpg";
-	std::string jpegFileName;
-	std::cin >> jpegFileName;
-	
+	if (argc < 2) {
+		Help help;
+		std::cerr << "Unsifiscient number of parameter \n\n";
+		std::cout << help;
+		return 0;
+	}
+
+	std::string jpegFileName(argv[1]);
+	std::string jpegFileDqte(argv[2]);
+
 	std::fstream jpegFile(jpegFileName, std::fstream::binary | std::fstream::in);
 
 	if (jpegFile.is_open() == false) {
 		std::cerr << "Cannot open file: " << jpegFileName << "\n";
-		return 1;
+		return 0;
 	}
 
 	Buffer fileBuffer( size(jpegFile) );
@@ -39,5 +61,5 @@ int main(int argc, const char** argv)
 		parser.advanceJpegDaga(marker->getSize());
 	}
 
-	return 0;
+	return 1;
 }
