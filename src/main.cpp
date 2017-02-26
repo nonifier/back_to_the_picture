@@ -5,7 +5,9 @@
 #include "Buffer.h"
 
 #include <fstream>
+#include <sstream>
 #include <iostream>
+#include <stdexcept>
 
 size_t size(std::fstream& stream) 
 {	
@@ -18,48 +20,64 @@ size_t size(std::fstream& stream)
 class Help 
 {
 public:
-	std::ostream& operator<<(std::ostream& o) const {
-		o << "BackToThePicture.exe	fileName creationDate \n";
-		o << "\t-filename: path to Jpeg file\n";
-		o << "\t-creationDate: creation date of the JPEG file (YYYY-MM-DD)\n";
+	std::ostream& echo(std::ostream& o) const {
+		o << "BackToThePicture.exe	\"fileName\" \"creationDate\" \n";
+		o << " - filename: path to Jpeg file\n";
+		o << " - creationDate: creation date of the JPEG file (YYYY-MM-DD)\n";
 		return o;
 	}
 };
 
 std::ostream& operator<<(std::ostream& o, const Help& h) {
-	o << h;
-	return o;
+	return h.echo(o);
 }
 
-int main(int argc, const char** argv)
-{
-	if (argc < 2) {
-		Help help;
-		std::cerr << "Unsifiscient number of parameter \n\n";
-		std::cout << help;
-		return 0;
-	}
-
-	std::string jpegFileName(argv[1]);
-	std::string jpegFileDqte(argv[2]);
+Buffer readFileToBuffer(const std::string& jpegFileName) {
 
 	std::fstream jpegFile(jpegFileName, std::fstream::binary | std::fstream::in);
 
 	if (jpegFile.is_open() == false) {
-		std::cerr << "Cannot open file: " << jpegFileName << "\n";
-		return 0;
+		std::stringstream ss;
+		ss << "Cannot open file: " << jpegFileName << "\n";
+		throw std::invalid_argument(ss.str());
 	}
 
-	Buffer fileBuffer( size(jpegFile) );
+	Buffer fileBuffer(size(jpegFile));
 	jpegFile >> fileBuffer;
 
-	jpeg::Parser parser( std::move(fileBuffer) );
-	while (parser.hasNextMarker())
-	{
-		std::unique_ptr<jpeg::Marker> marker = parser.getNextMarker();
-		std::cout << marker->getInfo() << "\n";
-		parser.advanceJpegDaga(marker->getSize());
+	return fileBuffer;
+}
+
+std::string readJpegFileNameFromArg(int argc, const char** argv) {
+	if (argc < 2) {
+		Help help;
+		std::stringstream ss;
+		ss << "Unsifiscient number of parameter \n\n" << help;
+		throw std::invalid_argument(ss.str());
 	}
 
+	std::string fileName(argv[1]);
+	return fileName;
+}
+
+int main(int argc, const char** argv)
+{
+	try {
+		std::string jpegFileName = readJpegFileNameFromArg(argc, argv);
+		Buffer fileBuffer = readFileToBuffer(jpegFileName);
+		jpeg::Parser parser(std::move(fileBuffer));
+
+		while (parser.hasNextMarker())
+		{
+			std::unique_ptr<jpeg::Marker> marker = parser.getNextMarker();
+			std::cout << marker->getInfo() << "\n";
+			parser.advanceJpegDaga(marker->getSize());
+		}
+	}
+	catch (std::exception& e) {
+		std::cerr << "\nERROR - " << e.what();
+		return 0;
+	}
+	
 	return 1;
 }
