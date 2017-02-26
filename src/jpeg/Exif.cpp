@@ -17,8 +17,7 @@ std::string Exif::getName() const {
 	return std::string(start_name);
 }
 
-std::string jpeg::Exif::getInfo() const
-{
+std::string jpeg::Exif::getInfo() const {
 	std::stringstream sstream;
 	sstream << "- Exif -\n";
 	sstream << "marker: " << std::hex << std::showbase 
@@ -35,12 +34,10 @@ std::string jpeg::Exif::getInfo() const
 	return sstream.str();
 }
 
-uint16_t Exif::getSize() const
-{
+uint16_t Exif::getSize() const {
 	return io::readUint16<2>(header.size) + 2;
 }
 
-uint32_t jpeg::Exif::getIdentifier() const
-{
+uint32_t jpeg::Exif::getIdentifier() const {
 	return io::readSize_t<4>(header.identifier);
 }

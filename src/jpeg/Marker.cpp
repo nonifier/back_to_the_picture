@@ -7,8 +7,7 @@
 
 using namespace jpeg;
 
-jpeg::Marker::Marker(const Slice s)
-{
+jpeg::Marker::Marker(const Slice s) {
 	header = ReinterpretSliceToMarkerHeader<Marker_header>(s);
 }
 

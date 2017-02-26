@@ -60,6 +60,8 @@ std::string readJpegFileNameFromArg(int argc, const char** argv) {
 	return fileName;
 }
 
+
+
 int main(int argc, const char** argv)
 {
 	try {

@@ -5,7 +5,7 @@
 
 using namespace jpeg;
 
-Jfif::Jfif(const Slice jpeg_data) {
+Jfif::Jfif(const Slice jpeg_data): Marker(jpeg_data) {
 	header = ReinterpretSliceToMarkerHeader<Jfif_header>(jpeg_data);
 }
 

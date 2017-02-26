@@ -34,13 +34,17 @@ Xmp::Xmp(const Slice jpeg_data) :
 	}
 }
 
-std::string Xmp::getName() const { return "Xmp"; }
+std::string Xmp::getName() const { 
+	return "Xmp"; 
+}
+
 std::string Xmp::getInfo() const { 
 	std::stringstream ss;
-
 	ss << "- Xmp -\n";
 	ss << "Create Date: " << std::put_time(&createDate, "%F\n");
 
 	return ss.str(); 
 }
-uint16_t Xmp::getSize() const { return io::readUint16<2>(header.size); }
+uint16_t Xmp::getSize() const { 
+	return io::readUint16<2>(header.size) + 2; 
+}
