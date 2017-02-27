@@ -7,8 +7,8 @@
 
 class Buffer {
 public:
+	Buffer();
 	Buffer(size_t size);
-
 	Buffer(const Buffer && buf);
 
 	std::shared_ptr<uint8_t> getData() const;

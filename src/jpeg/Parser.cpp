@@ -20,8 +20,7 @@ const Slice Parser::readNextDataSlice() const {
 		jpeg_data.getData().get() + readBytes );
 }
 
-void Parser::advanceJpegDaga(uint16_t parsedByte)
-{
+void Parser::advanceJpegDaga(uint16_t parsedByte) {
 	readBytes += parsedByte;
 }
 

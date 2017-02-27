@@ -1,6 +1,11 @@
 
 #include "Buffer.h"
 
+Buffer::Buffer() :
+	size(0),
+	data(nullptr)
+{}
+
 Buffer::Buffer(size_t size) :
 	size(size),
 	data(new uint8_t[size])
