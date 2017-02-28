@@ -9,6 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 
+
 size_t size(std::fstream& stream) 
 {	
 	stream.seekg(0, std::fstream::end);
@@ -60,8 +61,6 @@ std::string readJpegFileNameFromArg(int argc, const char** argv) {
 	return fileName;
 }
 
-
-
 int main(int argc, const char** argv)
 {
 	try {
@@ -69,13 +68,10 @@ int main(int argc, const char** argv)
 		Buffer fileBuffer = readFileToBuffer(jpegFileName);
 		jpeg::Parser parser(std::move(fileBuffer));
 
-		while (parser.hasNextMarker())
-		{
-			std::unique_ptr<jpeg::Marker> marker = parser.getNextMarker();
-			std::cout << "# " << marker->getName() << "\n";
-			std::cout << marker->getInfo() << "\n";
-			parser.advanceJpegDaga(marker->getSize());
-		}
+		parser.iterateMarkers([](jpeg::Marker& marker) {
+			std::cout << marker;
+		});
+		
 	}
 	catch (std::exception& e) {
 		std::cerr << "\nERROR - " << e.what();

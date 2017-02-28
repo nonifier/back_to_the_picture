@@ -7,7 +7,9 @@
 
 using namespace jpeg;
 
-jpeg::Marker::Marker(const Slice s) {
+Marker::Marker() {}
+
+Marker::Marker(const Slice s) {
 	header = ReinterpretSliceToMarkerHeader<Marker_header>(s);
 }
 
@@ -47,4 +49,10 @@ uint8_t* Marker::getNextMarkerPointer()
 	size_t offset = getSize();
 	uint8_t* start_marker_ptr = header.size;
 	return start_marker_ptr + offset;
+}
+
+std::ostream& operator<<(std::ostream& o, const Marker& marker) {
+	o << "# " << marker.getName() << "\n";
+	o << marker.getInfo() << "\n";
+	return o;
 }

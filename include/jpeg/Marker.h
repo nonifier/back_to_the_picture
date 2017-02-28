@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Slice.h"
+
+#include <sstream>
 #include <string>
 
 namespace jpeg {
@@ -16,7 +18,7 @@ namespace jpeg {
 			APP1 = 0xE1, // APP 1
 		};
 
-		Marker() {}
+		Marker();
 		Marker(const Slice s);
 		virtual ~Marker();
 		virtual std::string getName() const;
@@ -44,3 +46,5 @@ namespace jpeg {
 		uint8_t* getNextMarkerPointer();
 	};
 }
+
+std::ostream& operator<<(std::ostream& o, const jpeg::Marker& marker);

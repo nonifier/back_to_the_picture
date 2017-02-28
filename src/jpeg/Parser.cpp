@@ -20,8 +20,24 @@ const Slice Parser::readNextDataSlice() const {
 		jpeg_data.getData().get() + readBytes );
 }
 
+void Parser::reset() { 
+	readBytes = 0; 
+}
+
 void Parser::advanceJpegDaga(uint16_t parsedByte) {
 	readBytes += parsedByte;
+}
+
+Parser& Parser::iterateMarkers(std::function<void(Marker&)> func) {
+	do {
+		std::unique_ptr<jpeg::Marker> marker = getNextMarker();
+		func(*marker);
+		advanceJpegDaga(marker->getSize());
+	} while (hasNextMarker());
+
+	reset();
+
+	return *this;
 }
 
 bool Parser::hasNextMarker() const {
