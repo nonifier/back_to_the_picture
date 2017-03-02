@@ -40,19 +40,15 @@ namespace jpeg {
 			return Slice_const(header_ptr, header_size);
 		}
 
-		std::fstream& writeTo(std::fstream & out) const {
-			writeHeader(out);
-			writeData(out);
-			return out;
-		}
-
-		std::fstream& writeHeader(std::fstream & out) const {
+		template<class T>
+		T& writeHeader(T& out) const {
 			Slice_const header_slice = getHeaderSlice();
 			out << header_slice;
 			return out;
 		}
 
-		std::fstream& writeData(std::fstream & out) const {
+		template<class T>
+		T& writeData(T& out) const {
 			Slice_const data_slice = getDataSlice();
 			out << data_slice;
 			return out;
@@ -89,4 +85,10 @@ namespace jpeg {
 }
 
 std::ostream& operator<<(std::ostream& o, const jpeg::Marker& marker);
-std::fstream& operator<<(std::fstream& out, const jpeg::Marker& marker);
+
+template<class T>
+T& operator<<(T& out, const jpeg::Marker& marker) {
+	marker.writeHeader(out);
+	marker.writeData(out);
+	return out;
+}

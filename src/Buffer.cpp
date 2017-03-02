@@ -68,3 +68,13 @@ std::fstream& operator>> (std::fstream& in, Buffer& buffer) {
 	in.read(ptr, buffer.getSize());
 	return in;
 }
+
+Buffer& operator<<(Buffer& buffer, Slice slice) {
+	buffer.write(slice);
+	return buffer;
+}
+
+Buffer& operator<<(Buffer& buffer, Slice_const slice) {
+	buffer.write(slice);
+	return buffer;
+}

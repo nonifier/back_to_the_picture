@@ -71,8 +71,3 @@ std::ostream& operator<<(std::ostream& o, const Marker& marker) {
 	o << marker.getInfo() << "\n";
 	return o;
 }
-
-std::fstream& operator<<(std::fstream& out, const Marker& marker) {
-	marker.writeTo(out);
-	return out;
-}
