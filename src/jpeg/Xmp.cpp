@@ -8,9 +8,7 @@
 
 using namespace jpeg;
 
-Xmp::Xmp(const Slice jpeg_data) :
-	Marker(jpeg_data)
-{
+Xmp::Xmp(const Slice jpeg_data) {
 	header = ReinterpretSliceToMarkerHeader<Xmp_header>(jpeg_data);
 
 	const char * packet_ptr = reinterpret_cast<char*>(jpeg_data.getPtr());
@@ -51,6 +49,17 @@ std::tm Xmp::getCreateDate() const {
 	catch (const std::exception& e) {
 		throw e;
 	}
+}
+
+Slice_const Xmp::getHeaderSlice() const {
+	return getSliceFromHeader(header);
+}
+
+Slice_const Xmp::getDataSlice() const {
+	const uint8_t* packet_ptr = reinterpret_cast<const uint8_t*>(packet.c_str());
+	size_t packet_size = packet.size();
+
+	return Slice_const(packet_ptr, packet_size);
 }
 
 std::string Xmp::extractTag(const std::string& tagName) const {

@@ -4,9 +4,7 @@
 
 using namespace jpeg;
 
-Exif::Exif(const Slice jpeg_data): 
-	Marker(jpeg_data) 
-{
+Exif::Exif(const Slice jpeg_data) {
 	header = ReinterpretSliceToMarkerHeader<Exif_header>(jpeg_data);
 }
 
@@ -39,4 +37,8 @@ uint16_t Exif::getSize() const {
 
 uint32_t jpeg::Exif::getIdentifier() const {
 	return io::readSize_t<4>(header.identifier);
+}
+
+Slice_const Exif::getHeaderSlice() const {
+	return getSliceFromHeader(header);
 }

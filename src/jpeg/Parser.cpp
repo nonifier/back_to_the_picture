@@ -3,9 +3,12 @@
 #include "jpeg\Exif.h"
 #include "jpeg\Jfif.h"
 #include "jpeg\Xmp.h"
+#include "jpeg\SOI.h"
+#include "jpeg\Null_Marker.h"
 #include "IO.h"
 
 #include <utility>
+#include <stdexcept>
 
 using namespace jpeg;
 
@@ -16,8 +19,8 @@ Parser::Parser(Buffer && jpeg_data) :
 
 const Slice Parser::readNextDataSlice() const {
 	return Slice(
-		jpeg_data.getSize() - readBytes, 
-		jpeg_data.getData().get() + readBytes );
+		jpeg_data.getData().get() + readBytes,
+		jpeg_data.getSize() - readBytes );
 }
 
 void Parser::reset() { 
@@ -45,8 +48,8 @@ bool Parser::hasNextMarker() const {
 	if (readBytes >= jpeg_data.getSize()) 
 		return false;
 
-	const Marker marker(readNextDataSlice());
-	if (marker.getMarker() == 0xFF)
+	Slice nextSlice = readNextDataSlice();
+	if (*nextSlice == 0xFF)
 		return true;
 	
 	return false;
@@ -55,31 +58,41 @@ bool Parser::hasNextMarker() const {
 std::unique_ptr<Marker> Parser::getNextMarker() const 
 {
 	const Slice nextDataSlice = readNextDataSlice();
-	std::unique_ptr<Marker> marker = std::make_unique<Marker>(nextDataSlice);
 
-	uint8_t marker_code = marker->getCode();
+	uint8_t* marker_ptr = nextDataSlice.getPtr();
+	uint8_t marker_id = *marker_ptr;
+	if (marker_id != jpeg::Marker::MARKER) {
+		throw std::runtime_error("Marker doesn't start with 0xFF");
+	}
+
+	std::unique_ptr<Marker> marker = std::make_unique<Null_Marker>();
+	uint8_t marker_code = *(marker_ptr+1);
 	switch (marker_code)
 	{
 	case jpeg::Marker::Type::SOI:
+		marker = std::make_unique<SOI>(nextDataSlice);
+		break;
+	case jpeg::Marker::Type::APP0:
 		marker = std::make_unique<Jfif>(nextDataSlice);
 		break;
-	case jpeg::Marker::Type::APP1:
-	{
-		uint32_t id = marker->getIdentifier();
+	case jpeg::Marker::Type::APP1: {
+		std::unique_ptr<GenericMarker> generic_ptr = std::make_unique<GenericMarker>(nextDataSlice);
+		uint32_t id = generic_ptr->getIdentifier();
 		switch (id) 
 		{
 		case Exif::Id_code:
-			marker = std::make_unique<Exif>(nextDataSlice);
+			//marker = std::make_unique<Exif>(nextDataSlice);
 			break;
 		case Xmp::Id_code:
 			marker = std::make_unique<Xmp>(nextDataSlice);
 			break;
 		}
 
+		marker = std::move(generic_ptr);
 		break;
 	}
-	case jpeg::Marker::Type::APP0:
 	default:
+		marker = std::make_unique<GenericMarker>(nextDataSlice);
 		break;
 	}
 

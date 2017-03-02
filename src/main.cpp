@@ -68,8 +68,10 @@ int main(int argc, const char** argv)
 		Buffer fileBuffer = readFileToBuffer(jpegFileName);
 		jpeg::Parser parser(std::move(fileBuffer));
 
-		parser.iterateMarkers([](jpeg::Marker& marker) {
+		std::fstream outFile("output.jpeg", std::fstream::binary | std::fstream::out);
+		parser.iterateMarkers([&](jpeg::Marker& marker) {
 			std::cout << marker;
+			outFile << marker;		
 		});
 		
 	}

@@ -11,24 +11,59 @@ Buffer::Buffer(size_t size) :
 	data(new uint8_t[size])
 {}
 
-Buffer::Buffer(const Buffer && buf) :
+Buffer::Buffer(Buffer && buf) :
 	size(std::move(buf.size)),
 	data(std::move(buf.data))
 {}
 
-std::shared_ptr<uint8_t> Buffer::getData() const { 
-	return data; 
+Buffer& Buffer::operator=(const Buffer & buf) {
+	size = buf.size;
+	data = buf.data;
+	return *this;
 }
 
-size_t Buffer::getSize() const { 
-	return size; 
+Buffer& Buffer::operator=(Buffer && buf) {
+	size = std::move(buf.size);
+	data = std::move(buf.data);
+	return *this;
+}
+
+std::shared_ptr<uint8_t> Buffer::getData() const {
+	return data;
+}
+
+size_t Buffer::getSize() const {
+	return size;
 }
 
 Buffer::operator Slice() const {
-	return Slice(size, data.get());
+	return Slice(data.get(), size);
 }
 
-std::fstream& operator >> (std::fstream& in, Buffer& buffer) {
+Buffer::operator Slice_const() const {
+	return Slice_const(data.get(), size);
+}
+
+errno_t Buffer::write(const uint8_t* src, size_t size) {
+	errno_t res = 0;
+
+	if (size) {
+		void * dest_ptr = data.get();
+		res = memcpy_s(dest_ptr, size, src, size);
+	}
+
+	return res;
+}
+
+errno_t Buffer::write(Slice s) {
+	return write(s.getPtr(), s.getSize());
+}
+
+errno_t Buffer::write(Slice_const s) {
+	return write(s.getPtr(), s.getSize());
+}
+
+std::fstream& operator>> (std::fstream& in, Buffer& buffer) {
 	char* ptr = reinterpret_cast<char*>(buffer.getData().get());
 	in.read(ptr, buffer.getSize());
 	return in;

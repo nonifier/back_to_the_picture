@@ -15,5 +15,7 @@ namespace jpeg {
 		virtual std::string getName() const override;
 		virtual std::string getInfo() const override;
 		virtual uint16_t getSize() const override;
+		virtual Slice_const getHeaderSlice() const override;
+		virtual Slice_const getDataSlice() const override;
 	};
 }

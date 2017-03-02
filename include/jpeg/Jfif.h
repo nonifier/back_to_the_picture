@@ -14,11 +14,12 @@ namespace jpeg {
 		virtual std::string getName() const override;
 		virtual std::string getInfo() const override;
 		virtual uint16_t getSize() const override;
-
+		virtual Slice_const getHeaderSlice() const override;
+		virtual Slice_const getDataSlice() const override;
+		
 	private:
 		struct Jfif_header
 		{
-			uint8_t start_of_image[2];	/* 00h  Start of Image Marker     */
 			uint8_t application_use_marker[2];	/* 02h  Application Use Marker    */
 			uint8_t length[2];       /* 04h  Length of APP0 Field      */
 			uint8_t identifier[5];   /* 06h  "JFIF" (zero terminated) Id String */
@@ -30,5 +31,4 @@ namespace jpeg {
 			uint8_t y_thumbnail;      /* 0Fh  Vertical Pixel Count      */
 		} header;
 	};
-
 }

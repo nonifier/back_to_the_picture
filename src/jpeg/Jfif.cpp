@@ -5,7 +5,7 @@
 
 using namespace jpeg;
 
-Jfif::Jfif(const Slice jpeg_data): Marker(jpeg_data) {
+Jfif::Jfif(const Slice jpeg_data) {
 	header = ReinterpretSliceToMarkerHeader<Jfif_header>(jpeg_data);
 }
 
@@ -18,9 +18,6 @@ std::string Jfif::getName() const {
 
 std::string Jfif::getInfo() const {
 	std::stringstream sstrm;
-	sstrm << "SOI: " << std::hex << std::showbase 
-		<< io::readSize_t<2>(header.start_of_image) << "\n";
-	sstrm.flags(0);
 	sstrm << "size: " << io::readSize_t<2>(header.length) << " \n";
 	sstrm << "id: " << reinterpret_cast<const char*>(header.identifier) << " \n";
 	sstrm << "vers: v." << int(header.version[1]) << "." 
@@ -36,7 +33,14 @@ std::string Jfif::getInfo() const {
 	return sstrm.str();
 }
 
-uint16_t Jfif::getSize() const
-{
-	return io::readUint16<2>(header.length) + 4;
+uint16_t Jfif::getSize() const {
+	return io::readUint16<2>(header.length) + 2;
+}
+
+Slice_const Jfif::getHeaderSlice() const {
+	return getSliceFromHeader(header);
+}
+
+Slice_const Jfif::getDataSlice() const {
+	return Slice_const();
 }
