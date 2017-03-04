@@ -16,7 +16,7 @@ GenericMarker::GenericMarker(Slice s) {
 	const uint8_t* data_ptr = s.getPtr() + sizeof(header);
 	size_t data_size = marker_size - sizeof(header);
 	
-	data = std::move(Buffer(marker_size));
+	data = std::move(Buffer(data_size));
 	data.write(data_ptr, data_size);
 }
 

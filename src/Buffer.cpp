@@ -69,6 +69,11 @@ std::fstream& operator>> (std::fstream& in, Buffer& buffer) {
 	return in;
 }
 
+std::fstream& operator << (std::fstream& in, Buffer& buffer) {
+	const char* ptr = reinterpret_cast<const char*>(buffer.getData().get());
+	in.write(ptr, buffer.getSize());
+	return in;
+}
 Buffer& operator<<(Buffer& buffer, Slice slice) {
 	buffer.write(slice);
 	return buffer;
