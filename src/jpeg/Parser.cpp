@@ -5,6 +5,7 @@
 #include "jpeg\Xmp.h"
 #include "jpeg\SOI.h"
 #include "jpeg\Null_Marker.h"
+#include "jpeg\GenericMarker.h"
 #include "IO.h"
 
 #include <utility>
@@ -74,6 +75,8 @@ std::unique_ptr<Marker> Parser::getNextMarker() const
 		break;
 	case jpeg::Marker::Type::APP0:
 		marker = std::make_unique<Jfif>(nextDataSlice);
+		break;
+	case jpeg::Marker::Type::SOS:
 		break;
 	case jpeg::Marker::Type::APP1: {
 		std::unique_ptr<GenericMarker> generic_ptr = std::make_unique<GenericMarker>(nextDataSlice);
