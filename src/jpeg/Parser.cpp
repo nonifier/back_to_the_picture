@@ -6,6 +6,7 @@
 #include "jpeg\SOI.h"
 #include "jpeg\Null_Marker.h"
 #include "jpeg\GenericMarker.h"
+#include "jpeg\SOS.h"
 #include "IO.h"
 
 #include <utility>
@@ -13,8 +14,8 @@
 
 using namespace jpeg;
 
-Parser::Parser(Buffer && jpeg_data) :
-	jpeg_data( std::move(jpeg_data) ),
+Parser::Parser(Buffer & jpeg_data) :
+	jpeg_data(jpeg_data),
 	readBytes(0)
 {}
 
@@ -32,11 +33,13 @@ void Parser::advanceJpegDaga(uint16_t parsedByte) {
 	readBytes += parsedByte;
 }
 
-Parser& Parser::iterateMarkers(std::function<void(Marker&)> func) {
+Parser& Parser::iterateMarkers(MarkerVisitorFunc func) {
 	do {
 		std::unique_ptr<jpeg::Marker> marker = getNextMarker();
-		func(*marker);
-		advanceJpegDaga(marker->getSize());
+
+		advanceJpegDaga(marker->getSize()); 
+		func(std::move(marker));
+
 	} while (hasNextMarker());
 
 	reset();
@@ -77,6 +80,7 @@ std::unique_ptr<Marker> Parser::getNextMarker() const
 		marker = std::make_unique<Jfif>(nextDataSlice);
 		break;
 	case jpeg::Marker::Type::SOS:
+		marker = std::make_unique<SOS>(nextDataSlice);
 		break;
 	case jpeg::Marker::Type::APP1: {
 		std::unique_ptr<GenericMarker> generic_ptr = std::make_unique<GenericMarker>(nextDataSlice);

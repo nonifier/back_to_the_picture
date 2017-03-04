@@ -20,7 +20,7 @@ public:
 			return 0;
 		}
 
-		if (writtenBytes + write_size >= buff_size) {
+		if (writtenBytes + write_size > buff_size) {
 			return 0;
 		}
 

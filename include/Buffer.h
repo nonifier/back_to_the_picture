@@ -28,6 +28,8 @@ public:
 private:
 	size_t size;
 	std::shared_ptr<uint8_t> data;
+
+	void nullify();
 };
 
 std::fstream& operator >> (std::fstream& in, Buffer& buffer);

@@ -14,7 +14,9 @@ Buffer::Buffer(size_t size) :
 Buffer::Buffer(Buffer && buf) :
 	size(std::move(buf.size)),
 	data(std::move(buf.data))
-{}
+{
+	buf.nullify();
+}
 
 Buffer& Buffer::operator=(const Buffer & buf) {
 	size = buf.size;
@@ -25,6 +27,7 @@ Buffer& Buffer::operator=(const Buffer & buf) {
 Buffer& Buffer::operator=(Buffer && buf) {
 	size = std::move(buf.size);
 	data = std::move(buf.data);
+	buf.nullify();
 	return *this;
 }
 
@@ -61,6 +64,11 @@ errno_t Buffer::write(Slice s) {
 
 errno_t Buffer::write(Slice_const s) {
 	return write(s.getPtr(), s.getSize());
+}
+
+void Buffer::nullify() {
+	size = 0;
+	data.reset();
 }
 
 std::fstream& operator>> (std::fstream& in, Buffer& buffer) {

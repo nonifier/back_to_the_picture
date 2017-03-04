@@ -9,7 +9,8 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
-
+#include <ctime>
+#include <iomanip>
 
 size_t size(std::fstream& stream) 
 {	
@@ -62,25 +63,43 @@ std::string readJpegFileNameFromArg(int argc, const char** argv) {
 	return fileName;
 }
 
+std::string getLocalTime() {
+	std::tm sysTime;
+	std::time_t timeT = std::time(nullptr);
+	localtime_s(&sysTime, &timeT);
+
+	std::stringstream ss;
+	ss << std::put_time(&sysTime, "%Y-%m-%d_%H.%M.%S");
+	return ss.str();
+}
+
+std::string constructOutputFileName() {
+	std::string outputFileName("output_");
+	outputFileName += getLocalTime();
+	outputFileName += ".jpeg";
+
+	return outputFileName;
+}
+
 int main(int argc, const char** argv)
 {
 	try {
 		std::string jpegFileName = readJpegFileNameFromArg(argc, argv);
 		Buffer fileBuffer = readFileToBuffer(jpegFileName);
-		jpeg::Parser parser(std::move(fileBuffer));
+		jpeg::Parser parser(fileBuffer);
 
-		Buffer outBuff(fileBuffer.getSize());
-		BufferWritter bufferWritter(outBuff);
-		memset(outBuff.getData().get(), 0x0, outBuff.getSize());
-		
-		parser.iterateMarkers([&](jpeg::Marker& marker) {
-			std::cout << marker;
-			bufferWritter << marker;
+		std::string outputFileName = constructOutputFileName();
+		std::fstream outFile(outputFileName, std::fstream::binary | std::fstream::out);
+
+		if (!outFile.is_open()) {
+			std::cerr << "ERROR - cannot open output file: " << outputFileName << "\n";
+			return 0;
+		}
+
+		parser.iterateMarkers([&](jpeg::Parser::MarkerPtr marker) {
+			std::cout << *marker;
+			outFile << *marker;
 		});
-
-		std::fstream outFile("output.jpeg", std::fstream::binary | std::fstream::out);
-		outFile << outBuff;	
-		
 	}
 	catch (std::exception& e) {
 		std::cerr << "\nERROR - " << e.what();
