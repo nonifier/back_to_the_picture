@@ -3,6 +3,7 @@
 #include "jpeg\Parser.h"
 #include "Defer.h"
 #include "Buffer.h"
+#include "BufferWritter.h"
 
 #include <fstream>
 #include <sstream>
