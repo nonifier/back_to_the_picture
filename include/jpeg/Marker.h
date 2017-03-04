@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Slice.h"
-#include "Buffer.h"
 
 #include <sstream>
 #include <string>
