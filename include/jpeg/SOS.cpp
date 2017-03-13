@@ -25,8 +25,8 @@ std::string SOS::getInfo() const {
 	std::stringstream ss;
 	
 	ss << std::hex << std::showbase;
-	ss << "code: " << header.code << "\n";
-	ss << "id: " << header.id << "\n";
+	ss << "code: " << int(header.code) << "\n";
+	ss << "id: " << int(header.id) << "\n";
 	ss.flags(0);
 	ss << "data size: " << dataBuffer.getSize() << "\n";
 

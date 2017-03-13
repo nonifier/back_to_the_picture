@@ -66,10 +66,14 @@ std::string readJpegFileNameFromArg(int argc, const char** argv) {
 std::string getLocalTime() {
 	std::tm sysTime;
 	std::time_t timeT = std::time(nullptr);
+
 	localtime_s(&sysTime, &timeT);
 
+	static std::tm prevSysTime = { 0 };
+	static uint32_t counter = 0;
+
 	std::stringstream ss;
-	ss << std::put_time(&sysTime, "%Y-%m-%d_%H.%M.%S");
+	ss << std::put_time(&sysTime, "%Y-%m-%d_%H.%M.%S") << "_" << counter;
 	return ss.str();
 }
 
