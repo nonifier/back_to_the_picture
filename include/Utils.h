@@ -14,6 +14,9 @@ namespace utils {
 	std::ostream& operator<<(
 		std::ostream& o, const Help& h);
 
+	std::fstream open_file(
+		const std::string& filename);
+
 	Buffer readFileToBuffer(
 		const std::string& jpegFileName);
 

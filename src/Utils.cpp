@@ -38,18 +38,24 @@ std::ostream& operator<<(std::ostream& o, const Help& h) {
 	return h.echo(o);
 }
 
-Buffer readFileToBuffer(const std::string& jpegFileName) {
+std::fstream open_file(const std::string& filename) {
+	auto file_opt = std::fstream::binary | std::fstream::in;
+	std::fstream file(filename, file_opt);
 
-	std::fstream jpegFile(jpegFileName, std::fstream::binary | std::fstream::in);
-
-	if (jpegFile.is_open() == false) {
-		std::stringstream ss;
-		ss << "Cannot open file: " << jpegFileName << "\n";
-		throw std::invalid_argument(ss.str());
+	if (file.is_open()) {
+		return file;
 	}
 
-	Buffer fileBuffer(size(jpegFile));
-	jpegFile >> fileBuffer;
+	std::stringstream ss;
+	ss << "Cannot open file: " << filename << "\n";
+	throw std::invalid_argument(ss.str());
+}
+
+Buffer readFileToBuffer(const std::string& jpegFileName) 
+{
+	auto jpeg_file = open_file(jpegFileName);
+	Buffer fileBuffer(size(jpeg_file));
+	jpeg_file >> fileBuffer;
 
 	return fileBuffer;
 }
@@ -103,8 +109,13 @@ std::fstream getOutputStreamFile() {
 	return outFile;
 }
 
-/*
-int main(int argc, const char** argv)
+} // namespace utils
+
+
+
+using namespace utils;
+
+int __main__(int argc, const char** argv)
 {
 	try {
 		std::string jpegFileName = readJpegFileNameFromArg(argc, argv);
@@ -121,19 +132,16 @@ int main(int argc, const char** argv)
 		});
 
 		std::fstream outFile = getOutputStreamFile();
-		std::for_each(markers.cbegin(), markers.cend(), [&](const jpeg::Parser::MarkerPtr& marker){
+		std::for_each(markers.cbegin(), markers.cend(), [&](const jpeg::Parser::MarkerPtr& marker) {
 			outFile << *marker;
 		});
-		
+
 	}
 	catch (std::exception& e) {
 		std::cerr << "\nERROR - " << e.what();
 		return 0;
 	}
-	
+
 	return 1;
 }
 
-*/
-
-} // namespace utils

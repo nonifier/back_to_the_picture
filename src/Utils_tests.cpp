@@ -4,7 +4,7 @@
 
 using namespace utils;
 
-TEST(Utils, ) {
+TEST(Utils, should_open_file_if_it_exist) {
 	std::string filename("Hello.jpeg");
-	readFileToBuffer(filename);
+	EXPECT_NO_THROW(open_file(filename));
 }
