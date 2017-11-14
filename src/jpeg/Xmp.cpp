@@ -1,5 +1,5 @@
 #include "jpeg\Xmp.h"
-#include "IO.h"
+#include "io\IO.h"
 #include "StringUtil.h"
 
 #include <algorithm>

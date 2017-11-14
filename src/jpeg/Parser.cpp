@@ -73,12 +73,25 @@ std::unique_ptr<Marker> Parser::getNextMarker() const
 	uint8_t marker_code = *(marker_ptr+1);
 	switch (marker_code)
 	{
-	case jpeg::Marker::Type::SOI:
+	case Marker::Type::SOI:
 		marker = std::make_unique<SOI>(nextDataSlice);
 		break;
-	case jpeg::Marker::Type::APP0:
-		marker = std::make_unique<Jfif>(nextDataSlice);
+	case Marker::Type::APP0:
+	{
+		std::unique_ptr<GenericMarker> generic_marker = std::make_unique<GenericMarker>(nextDataSlice);
+		uint32_t id = generic_marker->getIdentifier();
+
+		switch (id) 
+		{
+		case Jfif::Id_code:
+			marker = std::make_unique<Jfif>(nextDataSlice);
+			break;
+		default:
+			marker = std::move(generic_marker);
+		}
+
 		break;
+	}
 	case jpeg::Marker::Type::SOS:
 		marker = std::make_unique<SOS>(nextDataSlice);
 		break;

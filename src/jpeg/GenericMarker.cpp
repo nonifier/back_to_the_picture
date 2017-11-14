@@ -1,6 +1,6 @@
 
 #include "jpeg\GenericMarker.h"
-#include "IO.h"
+#include "io\IO.h"
 #include "Buffer.h"
 
 using namespace jpeg;

@@ -32,8 +32,10 @@ private:
 	void nullify();
 };
 
-std::fstream& operator >> (std::fstream& in, Buffer& buffer);
-std::fstream& operator << (std::fstream& in, Buffer& buffer);
+std::istream& operator>>(
+	std::istream& in, Buffer& buffer);
+std::ostream& operator<<(
+	std::ostream& in, Buffer& buffer);
 
 Buffer& operator<<(Buffer& buffer, Slice slice);
 Buffer& operator<<(Buffer& buffer, Slice_const slice);

@@ -9,6 +9,8 @@ namespace jpeg {
 	class Jfif : public Marker
 	{
 	public:
+		const static uint32_t Id_code = 0x4a464946;
+
 		Jfif(const Slice jpeg_data);
 		virtual ~Jfif();
 		virtual std::string getName() const override;

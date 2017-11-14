@@ -1,16 +1,23 @@
 
+#include "Utils.h"
 #include "jpeg\Marker.h"
 #include "jpeg\Parser.h"
 #include "Defer.h"
 #include "Buffer.h"
 #include "BufferWritter.h"
 
+#include <vector>
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <ctime>
 #include <iomanip>
+
+#include <array>
+
+namespace utils {
 
 size_t size(std::fstream& stream) 
 {	
@@ -20,16 +27,12 @@ size_t size(std::fstream& stream)
 	return size_t(stream.tellg());
 }
 
-class Help 
-{
-public:
-	std::ostream& echo(std::ostream& o) const {
-		o << "BackToThePicture.exe	\"fileName\" \"creationDate\" \n";
-		o << " - filename: path to Jpeg file\n";
-		o << " - creationDate: creation date of the JPEG file (YYYY-MM-DD)\n";
-		return o;
-	}
-};
+std::ostream& Help::echo(std::ostream& o) const {
+	o << "BackToThePicture.exe	\"fileName\" \"creationDate\" \n";
+	o << " - filename: path to Jpeg file\n";
+	o << " - creationDate: creation date of the JPEG file (YYYY-MM-DD)\n";
+	return o;
+}
 
 std::ostream& operator<<(std::ostream& o, const Help& h) {
 	return h.echo(o);
@@ -74,6 +77,7 @@ std::string getLocalTime() {
 
 	std::stringstream ss;
 	ss << std::put_time(&sysTime, "%Y-%m-%d_%H.%M.%S") << "_" << counter;
+
 	return ss.str();
 }
 
@@ -85,6 +89,21 @@ std::string constructOutputFileName() {
 	return outputFileName;
 }
 
+std::fstream getOutputStreamFile() {
+	std::string outputFileName = constructOutputFileName();
+	std::fstream outFile(outputFileName, std::fstream::binary | std::fstream::out);
+
+	if (!outFile.is_open()) {
+		std::stringstream ss;
+		ss << "ERROR - cannot open output file: " << outputFileName;
+
+		throw std::runtime_error(ss.str());
+	}
+
+	return outFile;
+}
+
+/*
 int main(int argc, const char** argv)
 {
 	try {
@@ -92,18 +111,20 @@ int main(int argc, const char** argv)
 		Buffer fileBuffer = readFileToBuffer(jpegFileName);
 		jpeg::Parser parser(fileBuffer);
 
-		std::string outputFileName = constructOutputFileName();
-		std::fstream outFile(outputFileName, std::fstream::binary | std::fstream::out);
-
-		if (!outFile.is_open()) {
-			std::cerr << "ERROR - cannot open output file: " << outputFileName << "\n";
-			return 0;
-		}
-
+		std::vector<jpeg::Parser::MarkerPtr> markers;
 		parser.iterateMarkers([&](jpeg::Parser::MarkerPtr marker) {
 			std::cout << *marker;
+			markers.push_back(std::move(marker));
+
+			std::string marker_name = marker->getName();
+			// make marker name to lower case
+		});
+
+		std::fstream outFile = getOutputStreamFile();
+		std::for_each(markers.cbegin(), markers.cend(), [&](const jpeg::Parser::MarkerPtr& marker){
 			outFile << *marker;
 		});
+		
 	}
 	catch (std::exception& e) {
 		std::cerr << "\nERROR - " << e.what();
@@ -112,3 +133,7 @@ int main(int argc, const char** argv)
 	
 	return 1;
 }
+
+*/
+
+} // namespace utils

@@ -1,5 +1,5 @@
 
-#include "IO.h"
+#include "io\IO.h"
 #include "jpeg\SOI.h"
 
 #include <sstream>

@@ -71,13 +71,17 @@ void Buffer::nullify() {
 	data.reset();
 }
 
-std::fstream& operator>> (std::fstream& in, Buffer& buffer) {
+std::istream& operator>>(
+	std::istream& in, Buffer& buffer) 
+{
 	char* ptr = reinterpret_cast<char*>(buffer.getData().get());
 	in.read(ptr, buffer.getSize());
 	return in;
 }
 
-std::fstream& operator << (std::fstream& in, Buffer& buffer) {
+std::ostream& operator<<(
+	std::fstream& in, Buffer& buffer) 
+{
 	const char* ptr = reinterpret_cast<const char*>(buffer.getData().get());
 	in.write(ptr, buffer.getSize());
 	return in;

@@ -1,6 +1,6 @@
 
 #include "jpeg\Jfif.h"
-#include "IO.h"
+#include "io\IO.h"
 #include <sstream>
 
 using namespace jpeg;

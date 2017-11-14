@@ -1,4 +1,4 @@
-#include "IO.h"
+#include "io/IO.h"
 
 std::string io::to_upper(std::string & s) {
 	std::string upper(s);
