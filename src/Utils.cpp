@@ -19,9 +19,9 @@
 
 namespace utils {
 
-size_t size(std::fstream& stream) 
+size_t size(std::istream& stream) 
 {	
-	stream.seekg(0, std::fstream::end);
+	stream.seekg(0, std::ios_base::end);
 	Defer( stream.seekg(0, std::ios_base::beg) );
 
 	return size_t(stream.tellg());
@@ -45,7 +45,7 @@ std::fstream open_file(const std::string& filename) {
 	if (file.is_open()) {
 		return file;
 	}
-
+	
 	std::stringstream ss;
 	ss << "Cannot open file: " << filename << "\n";
 	throw std::invalid_argument(ss.str());

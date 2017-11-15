@@ -9,7 +9,7 @@ namespace utils {
 		std::ostream& echo(std::ostream& o) const;
 	};
 
-	size_t size(std::fstream& stream);
+	size_t size(std::istream& stream);
 
 	std::ostream& operator<<(
 		std::ostream& o, const Help& h);
