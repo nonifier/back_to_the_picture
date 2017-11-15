@@ -51,11 +51,10 @@ std::fstream open_file(const std::string& filename) {
 	throw std::invalid_argument(ss.str());
 }
 
-Buffer readFileToBuffer(const std::string& jpegFileName) 
+Buffer read_stream_to_buffer(std::istream& stream) 
 {
-	auto jpeg_file = open_file(jpegFileName);
-	Buffer fileBuffer(size(jpeg_file));
-	jpeg_file >> fileBuffer;
+	Buffer fileBuffer(size(stream));
+	stream >> fileBuffer;
 
 	return fileBuffer;
 }
@@ -119,7 +118,8 @@ int __main__(int argc, const char** argv)
 {
 	try {
 		std::string jpegFileName = readJpegFileNameFromArg(argc, argv);
-		Buffer fileBuffer = readFileToBuffer(jpegFileName);
+		auto jpeg_file = open_file(jpegFileName);
+		Buffer fileBuffer = read_stream_to_buffer(jpeg_file);
 		jpeg::Parser parser(fileBuffer);
 
 		std::vector<jpeg::Parser::MarkerPtr> markers;

@@ -32,6 +32,20 @@ TEST(Utils, empty_file_should_have_0_size)
 
 TEST(Utils, file_should_have_size_above_0)
 {
-	auto file = open_file(ten_bytes_filename);
-	EXPECT_EQ(10u, size(file));
+	std::stringstream ten_bytes_stream("1234567890");
+	EXPECT_EQ(10u, size(ten_bytes_stream));
+}
+
+TEST(Utils, should_read_file_into_buffer)
+{
+	std::stringstream ten_bytes_stream("1234567890");
+	Buffer file_buff = read_stream_to_buffer(ten_bytes_stream);
+	EXPECT_EQ(10u, file_buff.getSize());
+}
+
+TEST(Utils, should_read_empty_file_into_empty_buffer)
+{
+	auto file = open_file(empty_filename);
+	Buffer file_buff = read_stream_to_buffer(file);
+	EXPECT_EQ(0u, file_buff.getSize());
 }

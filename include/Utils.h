@@ -17,8 +17,8 @@ namespace utils {
 	std::fstream open_file(
 		const std::string& filename);
 
-	Buffer readFileToBuffer(
-		const std::string& jpegFileName);
+	Buffer read_stream_to_buffer( 
+		std::istream& streeam);
 
 	std::string readJpegFileNameFromArg(
 		int argc, const char** argv);
