@@ -33,14 +33,14 @@ void Parser::advanceJpegDaga(uint16_t parsedByte) {
 	readBytes += parsedByte;
 }
 
-Parser& Parser::iterateMarkers(MarkerVisitorFunc func) {
-	do {
-		std::unique_ptr<jpeg::Marker> marker = getNextMarker();
-
+Parser& Parser::iterateMarkers(MarkerVisitorFunc func) 
+{
+	while (hasNextMarker())
+	{
+		MarkerPtr marker = getNextMarker();
 		advanceJpegDaga(marker->getSize()); 
-		func(std::move(marker));
-
-	} while (hasNextMarker());
+		func(marker);
+	}
 
 	reset();
 
@@ -59,7 +59,7 @@ bool Parser::hasNextMarker() const {
 	return false;
 }
 
-std::unique_ptr<Marker> Parser::getNextMarker() const 
+Parser::MarkerPtr Parser::getNextMarker() const
 {
 	const Slice nextDataSlice = readNextDataSlice();
 
@@ -69,22 +69,22 @@ std::unique_ptr<Marker> Parser::getNextMarker() const
 		throw std::runtime_error("Marker doesn't start with 0xFF");
 	}
 
-	std::unique_ptr<Marker> marker = std::make_unique<Null_Marker>();
+	MarkerPtr marker = nullptr;
 	uint8_t marker_code = *(marker_ptr+1);
 	switch (marker_code)
 	{
 	case Marker::Type::SOI:
-		marker = std::make_unique<SOI>(nextDataSlice);
+		marker = std::make_shared<SOI>(nextDataSlice);
 		break;
 	case Marker::Type::APP0:
 	{
-		std::unique_ptr<GenericMarker> generic_marker = std::make_unique<GenericMarker>(nextDataSlice);
+		GenericMarkerPtr generic_marker = std::make_shared<GenericMarker>(nextDataSlice);
 		uint32_t id = generic_marker->getIdentifier();
 
 		switch (id) 
 		{
 		case Jfif::Id_code:
-			marker = std::make_unique<Jfif>(nextDataSlice);
+			marker = std::make_shared<Jfif>(nextDataSlice);
 			break;
 		default:
 			marker = std::move(generic_marker);
@@ -93,10 +93,10 @@ std::unique_ptr<Marker> Parser::getNextMarker() const
 		break;
 	}
 	case jpeg::Marker::Type::SOS:
-		marker = std::make_unique<SOS>(nextDataSlice);
+		marker = std::make_shared<SOS>(nextDataSlice);
 		break;
 	case jpeg::Marker::Type::APP1: {
-		std::unique_ptr<GenericMarker> generic_ptr = std::make_unique<GenericMarker>(nextDataSlice);
+		GenericMarkerPtr generic_ptr = std::make_shared<GenericMarker>(nextDataSlice);
 		uint32_t id = generic_ptr->getIdentifier();
 		switch (id) 
 		{
@@ -104,7 +104,7 @@ std::unique_ptr<Marker> Parser::getNextMarker() const
 			//marker = std::make_unique<Exif>(nextDataSlice);
 			break;
 		case Xmp::Id_code:
-			marker = std::make_unique<Xmp>(nextDataSlice);
+			marker = std::make_shared<Xmp>(nextDataSlice);
 			break;
 		}
 
@@ -112,7 +112,7 @@ std::unique_ptr<Marker> Parser::getNextMarker() const
 		break;
 	}
 	default:
-		marker = std::make_unique<GenericMarker>(nextDataSlice);
+		marker = std::make_shared<GenericMarker>(nextDataSlice);
 		break;
 	}
 

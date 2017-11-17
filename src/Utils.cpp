@@ -77,11 +77,11 @@ std::string getLocalTime() {
 
 	localtime_s(&sysTime, &timeT);
 
-	static std::tm prevSysTime = { 0 };
 	static uint32_t counter = 0;
 
 	std::stringstream ss;
-	ss << std::put_time(&sysTime, "%Y-%m-%d_%H.%M.%S") << "_" << counter;
+	ss << std::put_time(&sysTime, "%Y-%m-%d_%H.%M.%S") 
+	   << "_" << counter;
 
 	return ss.str();
 }
@@ -95,17 +95,17 @@ std::string constructOutputFileName() {
 }
 
 std::fstream getOutputStreamFile() {
+	auto stream_opt = std::fstream::binary | std::fstream::out;
 	std::string outputFileName = constructOutputFileName();
-	std::fstream outFile(outputFileName, std::fstream::binary | std::fstream::out);
+	std::fstream outFile(outputFileName, stream_opt);
 
-	if (!outFile.is_open()) {
-		std::stringstream ss;
-		ss << "ERROR - cannot open output file: " << outputFileName;
-
-		throw std::runtime_error(ss.str());
+	if (outFile.is_open()) {
+		return outFile;
 	}
 
-	return outFile;
+	std::stringstream ss;
+	ss << "ERROR - cannot open output file: " << outputFileName;
+	throw std::runtime_error(ss.str());
 }
 
 } // namespace utils

@@ -47,12 +47,12 @@ Buffer::operator Slice_const() const {
 	return Slice_const(data.get(), size);
 }
 
-errno_t Buffer::write(const uint8_t* src, size_t size) {
+errno_t Buffer::write(const uint8_t* src, size_t write_size) {
 	errno_t res = 0;
 
-	if (size) {
+	if (write_size) {
 		void * dest_ptr = data.get();
-		res = memcpy_s(dest_ptr, size, src, size);
+		res = memcpy_s(dest_ptr, size, src, write_size);
 	}
 
 	return res;

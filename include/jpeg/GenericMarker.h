@@ -4,6 +4,7 @@
 #include "jpeg\Marker.h"
 
 namespace jpeg {
+
 	class GenericMarker : public Marker
 	{
 	public:
@@ -31,4 +32,6 @@ namespace jpeg {
 
 		uint8_t* getNextMarkerPointer();
 	};
+
+	typedef std::shared_ptr<GenericMarker> GenericMarkerPtr;
 }

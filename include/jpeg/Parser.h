@@ -11,12 +11,12 @@ namespace jpeg {
 	class Parser
 	{
 	public:
-		typedef std::unique_ptr<Marker> MarkerPtr;
+		typedef std::shared_ptr<Marker> MarkerPtr;
 		typedef std::function<void(MarkerPtr)> MarkerVisitorFunc;
 
 		Parser(Buffer & jpeg_data);
 		bool hasNextMarker() const;
-		std::unique_ptr<Marker> getNextMarker() const;
+		MarkerPtr getNextMarker() const;
 		Parser& iterateMarkers(MarkerVisitorFunc func);
 
 	private:
