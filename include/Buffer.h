@@ -5,7 +5,8 @@
 #include <memory>
 #include <fstream>
 
-class Buffer {
+class Buffer 
+{
 public:
 	Buffer();
 	Buffer(size_t size);

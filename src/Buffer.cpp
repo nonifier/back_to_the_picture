@@ -1,5 +1,6 @@
 
 #include "Buffer.h"
+#include <algorithm>
 
 Buffer::Buffer() :
 	size(0),
@@ -8,7 +9,7 @@ Buffer::Buffer() :
 
 Buffer::Buffer(size_t size) :
 	size(size),
-	data(new uint8_t[size])
+	data(new uint8_t[size], [](uint8_t* p) {delete[] p; })
 {}
 
 Buffer::Buffer(Buffer && buf) :
