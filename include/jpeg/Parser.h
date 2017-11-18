@@ -16,7 +16,6 @@ namespace jpeg {
 
 		Parser(Buffer & jpeg_data);
 		bool hasNextMarker() const;
-		MarkerPtr getNextMarker() const;
 		Parser& iterateMarkers(MarkerVisitorFunc func);
 
 	private:
@@ -24,6 +23,8 @@ namespace jpeg {
 		size_t readBytes;
 
 		void reset();
+
+		MarkerPtr getNextMarker() const;
 		void advanceJpegDaga(uint16_t parsedData);
 		const Slice readNextDataSlice() const;
 	};

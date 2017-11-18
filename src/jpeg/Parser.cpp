@@ -63,8 +63,8 @@ Parser::MarkerPtr Parser::getNextMarker() const
 {
 	const Slice nextDataSlice = readNextDataSlice();
 
-	uint8_t* marker_ptr = nextDataSlice.getPtr();
-	uint8_t marker_id = *marker_ptr;
+	const uint8_t* marker_ptr = nextDataSlice.getPtr();
+	const uint8_t marker_id = *marker_ptr;
 	if (marker_id != jpeg::Marker::MARKER) {
 		throw std::runtime_error("Marker doesn't start with 0xFF");
 	}
@@ -87,7 +87,7 @@ Parser::MarkerPtr Parser::getNextMarker() const
 			marker = std::make_shared<Jfif>(nextDataSlice);
 			break;
 		default:
-			marker = std::move(generic_marker);
+			marker = generic_marker;
 		}
 
 		break;
@@ -108,7 +108,7 @@ Parser::MarkerPtr Parser::getNextMarker() const
 			break;
 		}
 
-		marker = std::move(generic_ptr);
+		marker = generic_ptr;
 		break;
 	}
 	default:
