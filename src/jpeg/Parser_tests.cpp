@@ -35,4 +35,5 @@ TEST(Parser, should_not_iterate_on_empty_buffer)
 
 TEST(Parser, should_parse_start_of_image)
 {
+
 }

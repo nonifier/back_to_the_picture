@@ -67,6 +67,16 @@ errno_t Buffer::write(Slice_const s) {
 	return write(s.getPtr(), s.getSize());
 }
 
+Buffer& Buffer::operator<<(Slice slice) {
+	write(slice);
+	return *this;
+}
+
+Buffer& Buffer::operator<<(Slice_const slice) {
+	write(slice);
+	return *this;
+}
+
 void Buffer::nullify() {
 	size = 0;
 	data.reset();
@@ -86,13 +96,4 @@ std::ostream& operator<<(
 	const char* ptr = reinterpret_cast<const char*>(buffer.getData().get());
 	in.write(ptr, buffer.getSize());
 	return in;
-}
-Buffer& operator<<(Buffer& buffer, Slice slice) {
-	buffer.write(slice);
-	return buffer;
-}
-
-Buffer& operator<<(Buffer& buffer, Slice_const slice) {
-	buffer.write(slice);
-	return buffer;
 }

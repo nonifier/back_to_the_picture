@@ -35,15 +35,23 @@ TEST(Buffer, should_not_throw_when_allocate)
 	EXPECT_NO_THROW(Buffer buff(reasonable_size));
 }
 
-TEST(Buffer, written_data_should_get_retreived)
+TEST(Buffer, should_write_data_from_smaller_container) 
 {
-	std::array<uint8_t, 6> arr = { 1, 2, 3 };
-	Buffer buff(arr.size());
-	buff.write(arr.data(), arr.size());
-	EXPECT_EQ(6, buff.getSize());
-	
-	auto ptr = Slice(buff).getPtr();
+	Buffer buff(3);
+	buff << std::array<uint8_t, 2>{1, 2};
+
+	auto ptr = buff.getData().get();
 	EXPECT_EQ(1, ptr[0]);
 	EXPECT_EQ(2, ptr[1]);
-	EXPECT_EQ(3, ptr[2]);
+}
+
+TEST(Buffer, should_write_last_element_with_continuous_obj)
+{
+	Buffer buff(2);
+	buff << std::array<uint8_t, 2>{1, 2}
+		<< std::array<uint8_t, 2>{3, 4};
+
+	auto ptr = buff.getData().get();
+	EXPECT_EQ(3, ptr[0]);
+	EXPECT_EQ(4, ptr[1]);
 }

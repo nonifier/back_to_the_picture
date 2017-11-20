@@ -26,6 +26,17 @@ public:
 	errno_t write(Slice s);
 	errno_t write(Slice_const s);
 
+	Buffer& operator<<(Slice slice);
+	Buffer& operator<<(Slice_const slice);
+
+	template<class T, size_t Size>
+	Buffer& operator<<(const std::array<T, Size>& arr) 
+	{
+		auto write_size = arr.size() * sizeof(T);
+		write(arr.data(), write_size);
+		return *this;
+	}
+
 private:
 	size_t size;
 	std::shared_ptr<uint8_t> data;
@@ -37,6 +48,3 @@ std::istream& operator>>(
 	std::istream& in, Buffer& buffer);
 std::ostream& operator<<(
 	std::ostream& in, Buffer& buffer);
-
-Buffer& operator<<(Buffer& buffer, Slice slice);
-Buffer& operator<<(Buffer& buffer, Slice_const slice);
