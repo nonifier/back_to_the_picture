@@ -103,12 +103,6 @@ std::ostream& operator<<(
 }
 
 Buffer_writter::Buffer_writter(const size_t size):
-	internal_buff(size),
+	Buffer(size),
 	written_bytes(0)
 {}
-
-std::shared_ptr<uint8_t> 
-Buffer_writter::getData() const
-{
-	return internal_buff.getData();
-}

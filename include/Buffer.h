@@ -11,6 +11,7 @@ public:
 	Buffer();
 	Buffer(size_t size);
 	Buffer(Buffer && buf);
+	virtual ~Buffer() {};
 
 	Buffer& operator=(const Buffer & buf);
 	Buffer& operator=(Buffer && buf);
@@ -36,7 +37,8 @@ public:
 	Buffer& operator<<(const std::array<T, Size>& arr) 
 	{
 		auto write_size = arr.size() * sizeof(T);
-		write(arr.data(), write_size);
+		const auto data_ptr = reinterpret_cast<const uint8_t*>(arr.data());
+		write(data_ptr, write_size);
 		return *this;
 	}
 
@@ -52,7 +54,7 @@ std::istream& operator>>(
 std::ostream& operator<<(
 	std::ostream& in, Buffer& buffer);
 
-class Buffer_writter 
+class Buffer_writter : public Buffer
 {
 public:
 	Buffer_writter(const size_t size);
@@ -62,14 +64,11 @@ public:
 		const std::array<T, Size>& arr)
 	{
 		auto write_size = arr.size() * sizeof(T);
-		internal_buff.write(arr.data(), write_size, written_bytes);
+		write(arr.data(), write_size, written_bytes);
 		written_bytes += write_size;
 		return *this;
 	}
 
-	std::shared_ptr<uint8_t> getData() const;
-
 private:
-	Buffer internal_buff;
 	size_t written_bytes;
 };

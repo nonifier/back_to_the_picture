@@ -8,24 +8,26 @@
 #include <memory>
 
 namespace jpeg {
-	class Parser
-	{
-	public:
-		typedef std::shared_ptr<Marker> MarkerPtr;
-		typedef std::function<void(MarkerPtr)> MarkerVisitorFunc;
 
-		Parser(Buffer & jpeg_data);
-		bool hasNextMarker() const;
-		Parser& iterateMarkers(MarkerVisitorFunc func);
+class Parser
+{
+public:
+	typedef std::shared_ptr<Marker> MarkerPtr;
+	typedef std::function<void(MarkerPtr)> MarkerVisitorFunc;
 
-	private:
-		Buffer& jpeg_data;
-		size_t readBytes;
+	Parser(Buffer & jpeg_data);
+	bool hasNextMarker() const;
+	Parser& iterateMarkers(MarkerVisitorFunc func);
 
-		void reset();
+private:
+	Buffer& jpeg_data;
+	size_t readBytes;
 
-		MarkerPtr getNextMarker() const;
-		void advanceJpegDaga(uint16_t parsedData);
-		const Slice readNextDataSlice() const;
-	};
-}
+	void reset();
+
+	MarkerPtr getNextMarker() const;
+	void advanceJpegDaga(uint16_t parsedData);
+	const Slice readNextDataSlice() const;
+};
+
+} // namepsace jpeg
