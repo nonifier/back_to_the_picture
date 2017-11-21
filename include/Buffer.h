@@ -22,7 +22,10 @@ public:
 	operator Slice() const;
 	operator Slice_const() const;
 
-	errno_t write(const uint8_t* ptr, size_t size);
+	errno_t write(
+		const uint8_t* ptr,
+		size_t size,
+		size_t offset = 0U);
 	errno_t write(Slice s);
 	errno_t write(Slice_const s);
 
@@ -48,3 +51,25 @@ std::istream& operator>>(
 	std::istream& in, Buffer& buffer);
 std::ostream& operator<<(
 	std::ostream& in, Buffer& buffer);
+
+class Buffer_writter 
+{
+public:
+	Buffer_writter(const size_t size);
+
+	template<class T, size_t Size>
+	Buffer_writter& operator<<(
+		const std::array<T, Size>& arr)
+	{
+		auto write_size = arr.size() * sizeof(T);
+		internal_buff.write(arr.data(), write_size, written_bytes);
+		written_bytes += write_size;
+		return *this;
+	}
+
+	std::shared_ptr<uint8_t> getData() const;
+
+private:
+	Buffer internal_buff;
+	size_t written_bytes;
+};

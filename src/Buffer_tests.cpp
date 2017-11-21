@@ -45,7 +45,7 @@ TEST(Buffer, should_write_data_from_smaller_container)
 	EXPECT_EQ(2, ptr[1]);
 }
 
-TEST(Buffer, should_write_last_element_with_continuous_obj)
+TEST(Buffer, should_overwrite_last_element_with_continuous_obj)
 {
 	Buffer buff(2);
 	buff << std::array<uint8_t, 2>{1, 2}
@@ -54,4 +54,28 @@ TEST(Buffer, should_write_last_element_with_continuous_obj)
 	auto ptr = buff.getData().get();
 	EXPECT_EQ(3, ptr[0]);
 	EXPECT_EQ(4, ptr[1]);
+}
+
+TEST(Buffer, should_write_with_offset)
+{
+	Buffer buff(4);
+	auto arr = std::array<uint8_t, 2>{1, 2};
+	buff.write(arr.data(), arr.size(), 2);
+
+	auto ptr = buff.getData().get();
+	EXPECT_EQ(1, ptr[2]);
+	EXPECT_EQ(2, ptr[3]);
+}
+
+TEST(Buffer_writter, should_write_consecutive_streams)
+{
+	Buffer_writter buff(4);
+	buff << std::array<uint8_t, 2>{1, 2}
+		<< std::array<uint8_t, 2>{3, 4};
+
+	auto ptr = buff.getData().get();
+	EXPECT_EQ(1, ptr[0]);
+	EXPECT_EQ(2, ptr[1]);
+	EXPECT_EQ(3, ptr[2]);
+	EXPECT_EQ(4, ptr[3]);
 }

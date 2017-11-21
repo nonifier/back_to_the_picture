@@ -48,11 +48,15 @@ Buffer::operator Slice_const() const {
 	return Slice_const(data.get(), size);
 }
 
-errno_t Buffer::write(const uint8_t* src, size_t write_size) {
+errno_t Buffer::write(
+	const uint8_t* src, 
+	size_t write_size,
+	size_t offset) 
+{
 	errno_t res = 0;
 
 	if (write_size) {
-		void * dest_ptr = data.get();
+		void * dest_ptr = data.get() + offset;
 		res = memcpy_s(dest_ptr, size, src, write_size);
 	}
 
@@ -91,9 +95,20 @@ std::istream& operator>>(
 }
 
 std::ostream& operator<<(
-	std::fstream& in, Buffer& buffer) 
+	std::ostream& in, Buffer& buffer) 
 {
 	const char* ptr = reinterpret_cast<const char*>(buffer.getData().get());
 	in.write(ptr, buffer.getSize());
 	return in;
+}
+
+Buffer_writter::Buffer_writter(const size_t size):
+	internal_buff(size),
+	written_bytes(0)
+{}
+
+std::shared_ptr<uint8_t> 
+Buffer_writter::getData() const
+{
+	return internal_buff.getData();
 }
