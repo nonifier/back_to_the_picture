@@ -59,6 +59,17 @@ Buffer read_stream_to_buffer(std::istream& stream)
 	return fileBuffer;
 }
 
+Buffer read_file_to_buffer(const std::string& filename)
+{
+	try {
+		auto file = open_file(filename);
+		return read_stream_to_buffer(file);
+	}
+	catch (std::exception& e) {
+		throw e;
+	}
+}
+
 std::string readJpegFileNameFromArg(int argc, const char** argv) {
 	if (argc < 2) {
 		Help help;
@@ -109,7 +120,6 @@ std::fstream getOutputStreamFile() {
 }
 
 } // namespace utils
-
 
 
 using namespace utils;

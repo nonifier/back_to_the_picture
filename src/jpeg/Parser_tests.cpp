@@ -1,3 +1,4 @@
+#include "Utils.h"
 #include "jpeg\Parser.h"
 #include "jpeg\SOI.h"
 #include "gtest\gtest.h"
@@ -38,20 +39,30 @@ TEST(Parser, should_not_iterate_on_empty_buffer)
 
 TEST(Parser, should_parse_start_of_image)
 {
-	auto arr_size = smaller_jpeg.size() * sizeof(Image::value_type);
+	const auto arr_size = utils::get_array_size(smaller_jpeg);
 	Buffer buff(arr_size);
 	buff << smaller_jpeg;
 
 	Parser parser(buff);
 	MockFunction<void(Parser::MarkerPtr)> mock;
 	
-	EXPECT_CALL(mock,
-		 Call(
-			 Pointee(
-				 Property(&Marker::getName, StrCaseEq("SOI"))
-			 )
-		 )
-	).Times(1);
+	EXPECT_CALL(mock, Call(
+		Pointee(Property(&Marker::getName, StrCaseEq("SOI")))
+	)).Times(1);
 
 	parser.iterateMarkers(mock.AsStdFunction());
 }
+
+TEST(Parser, should_parse_image)
+{
+	const auto filename = "test_resrc/dsc05869_origin.jpg";
+	Buffer file_buff = utils::read_file_to_buffer(filename);
+	Parser parser(file_buff);
+
+	MockFunction<void(Parser::MarkerPtr)> mock;
+	EXPECT_CALL(mock, Call(_))
+		.Times(10);
+
+	parser.iterateMarkers(mock.AsStdFunction());
+}
+

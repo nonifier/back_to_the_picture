@@ -20,8 +20,16 @@ namespace utils {
 	Buffer read_stream_to_buffer( 
 		std::istream& streeam);
 
+	Buffer read_file_to_buffer(
+		const std::string& filename);
+
 	std::string readJpegFileNameFromArg(
 		int argc, const char** argv);
+
+	template<class T, size_t S>
+	size_t get_array_size(std::array<T, S> arr) {
+		return arr.size() * sizeof(T);
+	}
 
 	std::string getLocalTime();
 	std::string constructOutputFileName();
