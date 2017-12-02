@@ -49,7 +49,7 @@ Buffer::operator Slice_const() const {
 }
 
 errno_t Buffer::write(
-	const uint8_t* src, 
+	const void* src, 
 	size_t write_size,
 	size_t offset) 
 {

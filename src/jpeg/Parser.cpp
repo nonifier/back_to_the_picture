@@ -53,7 +53,7 @@ bool Parser::hasNextMarker() const {
 		return false;
 
 	Slice nextSlice = readNextDataSlice();
-	if (*nextSlice == 0xFF)
+	if (*nextSlice == Marker::Type::MARKER)
 		return true;
 	
 	return false;
@@ -74,47 +74,40 @@ Parser::MarkerPtr Parser::getNextMarker() const
 	switch (marker_code)
 	{
 	case Marker::Type::SOI:
-		marker = std::make_shared<SOI>(nextDataSlice);
-		break;
+		return std::make_shared<SOI>(nextDataSlice);
+
 	case Marker::Type::APP0:
 	{
-		GenericMarkerPtr generic_marker = std::make_shared<GenericMarker>(nextDataSlice);
+		GenericMarkerPtr generic_marker = 
+			std::make_shared<GenericMarker>(nextDataSlice);
 		uint32_t id = generic_marker->getIdentifier();
 
 		switch (id) 
 		{
 		case Jfif::Id_code:
-			marker = std::make_shared<Jfif>(nextDataSlice);
-			break;
+			return std::make_shared<Jfif>(nextDataSlice);
 		default:
-			marker = generic_marker;
+			return generic_marker;
 		}
-
-		break;
 	}
 	case jpeg::Marker::Type::SOS:
-		marker = std::make_shared<SOS>(nextDataSlice);
-		break;
+		return std::make_shared<SOS>(nextDataSlice);
+
 	case jpeg::Marker::Type::APP1: {
 		GenericMarkerPtr generic_ptr = std::make_shared<GenericMarker>(nextDataSlice);
 		uint32_t id = generic_ptr->getIdentifier();
 		switch (id) 
 		{
-		case Exif::Id_code:
+		//case Exif::Id_code:
 			//marker = std::make_unique<Exif>(nextDataSlice);
-			break;
+			//break;
 		case Xmp::Id_code:
-			marker = std::make_shared<Xmp>(nextDataSlice);
-			break;
+			return std::make_shared<Xmp>(nextDataSlice);
+		default:
+			return generic_ptr;
 		}
-
-		marker = generic_ptr;
-		break;
 	}
 	default:
-		marker = std::make_shared<GenericMarker>(nextDataSlice);
-		break;
+		return std::make_shared<GenericMarker>(nextDataSlice);
 	}
-
-	return marker;
 }

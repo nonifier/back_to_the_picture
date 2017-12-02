@@ -8,12 +8,29 @@
 
 using namespace jpeg;
 
-Xmp::Xmp(const Slice jpeg_data) {
-	header = ReinterpretSliceToMarkerHeader<Xmp_header>(jpeg_data);
+Xmp::Xmp(const Slice jpeg_data) :
+	header(ReinterpretSliceToMarkerHeader<Xmp_header>(jpeg_data)),
+	packet(
+		extract_packet(
+			jpeg_data.sub_slice(sizeof(header))))
+{
+}
 
-	const char * packet_ptr = reinterpret_cast<char*>(jpeg_data.getPtr());
-	packet_ptr += sizeof(Xmp_header);
-	packet = std::move(std::string(packet_ptr));	
+
+std::string Xmp::extract_packet(const Slice data)
+{
+	auto packet_ptr = reinterpret_cast<char*>(data.getPtr());
+	auto packet_ptr_end = std::next(packet_ptr);
+	auto data_size = data.getSize();
+
+	while (*packet_ptr_end != 'ÿ' && data_size) {
+		packet_ptr_end++;
+		data_size--;
+	}
+
+	auto packet_size = std::distance(packet_ptr, packet_ptr_end);
+
+	return std::string(packet_ptr, packet_size);
 }
 
 std::string Xmp::getName() const { 

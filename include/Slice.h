@@ -25,6 +25,10 @@ public:
 	uint8_t* operator&() const { return ptr; }
 	uint8_t operator*() const { return *ptr; }
 
+	Slice sub_slice(size_t ptr_offset) const {
+		return Slice(ptr + ptr_offset, size-ptr_offset); 
+	}
+
 private:
 	size_t size;
 	uint8_t* ptr;

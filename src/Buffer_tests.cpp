@@ -79,3 +79,14 @@ TEST(Buffer_writter, should_write_consecutive_streams)
 	EXPECT_EQ(3, ptr[2]);
 	EXPECT_EQ(4, ptr[3]);
 }
+
+TEST(Buffer_writter, should_throw_error_on_overflow)
+{
+	Buffer_writter buffw(2);
+	const auto data = std::array<uint8_t, 4>{1, 2, 3, 4};
+
+	EXPECT_THROW(
+		buffw << data,
+		std::overflow_error
+	);
+}

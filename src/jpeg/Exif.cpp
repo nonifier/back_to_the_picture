@@ -42,3 +42,8 @@ uint32_t jpeg::Exif::getIdentifier() const {
 Slice_const Exif::getHeaderSlice() const {
 	return getSliceFromHeader(header);
 }
+
+Slice_const Exif::getDataSlice() const 
+{
+	return Slice_const();
+}

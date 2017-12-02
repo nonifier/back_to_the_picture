@@ -35,6 +35,7 @@ namespace jpeg {
 
 		std::string packet;
 
+		std::string extract_packet(const Slice data);
 		std::string extractTag(const std::string& tagName) const;
 		std::tm getCreateDate() const;
 	};
