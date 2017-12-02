@@ -15,12 +15,12 @@ public:
 	typedef std::shared_ptr<Marker> MarkerPtr;
 	typedef std::function<void(MarkerPtr)> MarkerVisitorFunc;
 
-	Parser(Buffer & jpeg_data);
+	Parser(const Buffer & jpeg_data);
 	bool hasNextMarker() const;
 	Parser& iterateMarkers(MarkerVisitorFunc func);
 
 private:
-	Buffer& jpeg_data;
+	const Buffer& jpeg_data;
 	size_t readBytes;
 
 	void reset();

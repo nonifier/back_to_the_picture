@@ -13,9 +13,7 @@ Xmp::Xmp(const Slice jpeg_data) :
 	packet(
 		extract_packet(
 			jpeg_data.sub_slice(sizeof(header))))
-{
-}
-
+{}
 
 std::string Xmp::extract_packet(const Slice data)
 {

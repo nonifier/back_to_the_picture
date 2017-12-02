@@ -23,6 +23,30 @@ namespace {
 	const auto filename = "test_resrc/dsc05869_correcte_date.jpg";
 	const auto filename_w_date = "test_resrc/dsc05869_origin_with_date.jpg";
 	const auto filename_full_data = "test_resrc/1_px_full_data.jpeg";
+	const auto xmp_str = std::string(
+		"http://ns.adobe.com/xap/1.0/."
+		"<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>"
+		"<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.5.0\">"
+		"<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">"
+		"<rdf:Description rdf:about=\"\"/>"
+		"</rdf:RDF>"
+		"</x:xmpmeta>"
+		"<?xpacket end=\"w\"?>"
+	);
+
+	Buffer build_APP1_buffer_from_string(const std::string& str)
+	{
+		const auto tag_size = uint16_t(str.size() + 2);
+		Buffer_writter xmp_buff(tag_size + 2);
+
+		xmp_buff
+			<< Marker::MARKER
+			<< Marker::APP1
+			<< tag_size
+			<< xmp_str;
+
+		return std::move(xmp_buff);
+	}
 }
 
 TEST(Parser, should_create_empty_parser) 
@@ -73,33 +97,16 @@ TEST(Parser, should_parse_image)
 
 TEST(Parser, should_parse_xmp_tag)
 {
-	const auto xmp_str = std::string(
-		"http://ns.adobe.com/xap/1.0/."
-		"<?xpacket begin=\"﻿\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>"
-		"<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"XMP Core 5.5.0\">"
-		"<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">"
-		"<rdf:Description rdf:about=\"\"/>"
-		"</rdf:RDF>"
-		"</x:xmpmeta>"
-		"<?xpacket end=\"w\"?>"
-	);
-	const auto tag_size = uint16_t(xmp_str.size() + 2);
-
-	Buffer_writter xmp_buff(1024);
-	xmp_buff
-		<< Marker::MARKER
-		<< Marker::APP1
-		<< tag_size
-		<< xmp_str;
+	const auto buff = build_APP1_buffer_from_string(xmp_str);
 
 	MockFunction<void(Parser::MarkerPtr)> mock;
 	EXPECT_CALL(mock, Call(
 		AllOf(
 			Pointee(Property(&Marker::getName, StrCaseEq("Xmp"))),
-			Pointee(Property(&Marker::getSize, Ge(tag_size)))
+			Pointee(Property(&Marker::getSize, Eq(buff.getSize())))
 	))).Times(AtLeast(1));
 
-	Parser parser(xmp_buff);
+	Parser parser(buff);
 	const auto& mock_call = mock.AsStdFunction();
 	parser.iterateMarkers(mock_call);
 }

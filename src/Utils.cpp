@@ -56,7 +56,7 @@ Buffer read_stream_to_buffer(std::istream& stream)
 	Buffer fileBuffer(size(stream));
 	stream >> fileBuffer;
 
-	return fileBuffer;
+	return std::move(fileBuffer);
 }
 
 Buffer read_file_to_buffer(const std::string& filename)
@@ -129,7 +129,7 @@ int __main__(int argc, const char** argv)
 	try {
 		std::string jpegFileName = readJpegFileNameFromArg(argc, argv);
 		auto jpeg_file = open_file(jpegFileName);
-		Buffer fileBuffer = read_stream_to_buffer(jpeg_file);
+		const Buffer fileBuffer = std::move(read_stream_to_buffer(jpeg_file));
 		jpeg::Parser parser(fileBuffer);
 
 		std::vector<jpeg::Parser::MarkerPtr> markers;

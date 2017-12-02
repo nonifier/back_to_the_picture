@@ -14,7 +14,7 @@
 
 using namespace jpeg;
 
-Parser::Parser(Buffer & jpeg_data) :
+Parser::Parser(const Buffer & jpeg_data) :
 	jpeg_data(jpeg_data),
 	readBytes(0)
 {}
