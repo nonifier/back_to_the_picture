@@ -10,14 +10,13 @@ namespace jpeg {
 	class Marker
 	{
 	public:
-		enum Type {
-			MARKER = 0xFF,
-			SOI = 0xD8, // Start Of Image
-			EOI = 0xD9, // End Of Image
-			APP0 = 0xE0, // APP 0
-			APP1 = 0xE1, // APP 1
-			SOS = 0xDA, // Start Of Scan
-		};
+		
+		const static uint8_t MARKER = 0xFF;
+		const static uint8_t SOI = 0xD8; // Start Of Image
+		const static uint8_t EOI = 0xD9; // End Of Image
+		const static uint8_t APP0 = 0xE0; // APP 0
+		const static uint8_t APP1 = 0xE1; // APP 1
+		const static uint8_t SOS = 0xDA; // Start Of Scan
 
 		virtual ~Marker();
 		virtual std::string getName() const = 0;

@@ -23,7 +23,9 @@ std::string Xmp::extract_packet(const Slice data)
 	auto packet_ptr_end = std::next(packet_ptr);
 	auto data_size = data.getSize();
 
-	while (*packet_ptr_end != 'ÿ' && data_size) {
+	while (*packet_ptr_end != Marker::MARKER 
+		&& data_size) 
+	{
 		packet_ptr_end++;
 		data_size--;
 	}
@@ -33,11 +35,13 @@ std::string Xmp::extract_packet(const Slice data)
 	return std::string(packet_ptr, packet_size);
 }
 
-std::string Xmp::getName() const { 
+std::string Xmp::getName() const 
+{ 
 	return "Xmp"; 
 }
 
-std::string Xmp::getInfo() const { 
+std::string Xmp::getInfo() const 
+{ 
 	std::stringstream ss;
 	ss << "size: " << std::hex << std::showbase << getSize() << "\n";
 	ss << packet << "\n";

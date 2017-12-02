@@ -53,7 +53,7 @@ bool Parser::hasNextMarker() const {
 		return false;
 
 	Slice nextSlice = readNextDataSlice();
-	if (*nextSlice == Marker::Type::MARKER)
+	if (*nextSlice == Marker::MARKER)
 		return true;
 	
 	return false;
@@ -65,7 +65,7 @@ Parser::MarkerPtr Parser::getNextMarker() const
 
 	const uint8_t* marker_ptr = nextDataSlice.getPtr();
 	const uint8_t marker_id = *marker_ptr;
-	if (marker_id != jpeg::Marker::MARKER) {
+	if (marker_id != Marker::MARKER) {
 		throw std::runtime_error("Marker doesn't start with 0xFF");
 	}
 
@@ -73,10 +73,10 @@ Parser::MarkerPtr Parser::getNextMarker() const
 	uint8_t marker_code = *(marker_ptr+1);
 	switch (marker_code)
 	{
-	case Marker::Type::SOI:
+	case Marker::SOI:
 		return std::make_shared<SOI>(nextDataSlice);
 
-	case Marker::Type::APP0:
+	case Marker::APP0:
 	{
 		GenericMarkerPtr generic_marker = 
 			std::make_shared<GenericMarker>(nextDataSlice);
@@ -90,10 +90,10 @@ Parser::MarkerPtr Parser::getNextMarker() const
 			return generic_marker;
 		}
 	}
-	case jpeg::Marker::Type::SOS:
+	case jpeg::Marker::SOS:
 		return std::make_shared<SOS>(nextDataSlice);
 
-	case jpeg::Marker::Type::APP1: {
+	case jpeg::Marker::APP1: {
 		GenericMarkerPtr generic_ptr = std::make_shared<GenericMarker>(nextDataSlice);
 		uint32_t id = generic_ptr->getIdentifier();
 		switch (id) 

@@ -87,8 +87,8 @@ TEST(Parser, should_parse_xmp_tag)
 
 	Buffer_writter xmp_buff(1024);
 	xmp_buff
-		<< uint8_t(Marker::Type::MARKER)
-		<< uint8_t(Marker::Type::APP1)
+		<< Marker::MARKER
+		<< Marker::APP1
 		<< tag_size
 		<< xmp_str;
 
