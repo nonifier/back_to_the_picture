@@ -2,22 +2,24 @@
 #include "io\IO.h"
 #include "StringUtil.h"
 
-#include <algorithm>
-#include <sstream>
 #include <iomanip>
 
 using namespace jpeg;
 
 Xmp::Xmp(const Slice jpeg_data) :
-	header(ReinterpretSliceToMarkerHeader<Xmp_header>(jpeg_data)),
+	header(
+		ReinterpretSliceToMarkerHeader<Xmp_header>(jpeg_data)
+	),
 	packet(
 		extract_packet(
-			jpeg_data.sub_slice(sizeof(header))))
+			jpeg_data.sub_slice(sizeof(header))
+		)
+	)
 {}
 
 std::string Xmp::extract_packet(const Slice data)
 {
-	auto packet_ptr = reinterpret_cast<char*>(data.getPtr());
+	const auto packet_ptr = reinterpret_cast<char*>(data.getPtr());
 	auto packet_ptr_end = std::next(packet_ptr);
 	auto data_size = data.getSize();
 
@@ -29,7 +31,6 @@ std::string Xmp::extract_packet(const Slice data)
 	}
 
 	auto packet_size = std::distance(packet_ptr, packet_ptr_end);
-
 	return std::string(packet_ptr, packet_size);
 }
 
@@ -39,15 +40,19 @@ std::string Xmp::getName() const
 }
 
 std::string Xmp::getInfo() const 
-{ 
+{
+	const auto namespce_cstr = reinterpret_cast<const char*>(header.namespaceURI);
+	const std::string uri(namespce_cstr, sizeof(header.namespaceURI));
+
 	std::stringstream ss;
 	ss << "size: " << std::hex << std::showbase << getSize() << "\n";
+	ss << uri << "\n";
 	ss << packet << "\n";
 
 	try {
 		std::tm creationDate = getCreateDate();
 		ss << "Create Date: " << std::put_time(&creationDate, "%F\n");
-	}catch(...){}
+	} catch(...){}
 
 	return ss.str(); 
 }
@@ -58,7 +63,8 @@ uint16_t Xmp::getSize() const {
 
 std::tm Xmp::getCreateDate() const {
 	try {
-		std::string creationDateStr = extractTag("CreationDate");
+		std::string creationDateStr = 
+			utils::extract_tag(packet, "CreationDate");
 		std::stringstream ss(creationDateStr);
 		std::tm creationDate;
 		ss >> std::get_time(&creationDate, "%Y-%m-%d");
@@ -81,28 +87,3 @@ Slice_const Xmp::getDataSlice() const {
 	return Slice_const(packet_ptr, packet_size);
 }
 
-std::string Xmp::extractTag(const std::string& tagName) const {
-	size_t tagStartOffet = packet.find(tagName);
-
-	if (tagStartOffet == std::string::npos) {
-		std::stringstream ss("Opening tag not found: ");
-		ss << tagName;
-		throw std::runtime_error(ss.str());
-	}
-
-	std::string tagStart(packet.substr(tagStartOffet));
-	std::string tagStr = tagStart.substr(tagName.size());
-	size_t tagEndOffset = tagStr.find(tagName);
-
-	if (tagEndOffset == std::string::npos) {
-		std::stringstream ss("Closing tag not found: ");
-		ss << tagName;
-		throw std::runtime_error(ss.str());
-	}
-
-	tagStr = tagStr.substr(0, tagEndOffset);
-	tagStr = removeBeforeChar(tagStr, '>');
-	tagStr = removePastChar(tagStr, '<');
-
-	return tagStr;
-}

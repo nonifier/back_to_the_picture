@@ -110,3 +110,11 @@ TEST(Parser, should_parse_xmp_tag)
 	const auto& mock_call = mock.AsStdFunction();
 	parser.iterateMarkers(mock_call);
 }
+
+TEST(Xmp, should_contruct_xmp_from_slice )
+{
+	const auto buff = build_APP1_buffer_from_string(xmp_str);
+	Xmp xmp(buff);
+
+	EXPECT_EQ(buff.getSize(), xmp.getSize());
+}
