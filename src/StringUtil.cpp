@@ -1,6 +1,8 @@
 
 #include "StringUtil.h"
+
 #include <sstream>
+#include <iomanip>
 
 namespace utils {
 
@@ -50,6 +52,20 @@ std::string extract_tag(
 	tagStr = remove_char_and_after(tagStr, '<');
 
 	return tagStr;
+}	
+
+bool has_tag(std::string_view str, std::string_view tag)
+{
+	return str.find(tag) != std::string::npos;
+}
+
+std::string convert_tm_as_string(const tm time)
+{
+	std::stringstream ss;
+
+	ss << std::put_time(&time, "%FT%T.000");
+	
+	return ss.str();
 }
 
 } // namespace utils

@@ -16,7 +16,7 @@ namespace {
 		" </x:xmpmeta> "
 		"<?xpacket end=\"w\"?>";
 
-	const auto exif_create_date_xml =
+	const auto exif_with_create_date_xml =
 		"<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>"
 		" <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">"
 		"  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">"
@@ -27,6 +27,20 @@ namespace {
 		" </x:xmpmeta>"
 		"<?xpacket end=\"w\"?>";
 
+	const std::string _2017_02_12T13_45_40_str = 
+		"2017-02-12T13:45:40.000";
+
+	const std::tm _2017_02_12T13_45_40_TM{
+		40,   // seconds after the minute - [0, 60] including leap second
+		45,   // minutes after the hour - [0, 59]
+		13,  // hours since midnight - [0, 23]
+		12,  // day of the month - [1, 31]
+		1,   // months since January - [0, 11]
+		117,  // years since 1900
+		0,  // days since Sunday - [0, 6]
+		43,  // days since January 1 - [0, 365]
+		0, // daylight savings time flag
+	};
 }
 
 TEST(StringUtil, should_remove_character_and_before)
@@ -49,7 +63,7 @@ TEST(StringUtil, should_extract_tag_from_xml)
 {
 	EXPECT_STRCASEEQ(
 		"2017-02-12T13:45:40.089", 
-		extract_tag(exif_create_date_xml, "CreateDate").c_str()
+		extract_tag(exif_with_create_date_xml, "CreateDate").c_str()
 	);
 }
 
@@ -57,6 +71,36 @@ TEST(StringUtil, should_extract_tag_with_namespace_from_xml)
 {
 	EXPECT_STRCASEEQ(
 		"2017-02-12T13:45:40.089",
-		extract_tag(exif_create_date_xml, "xmp:CreateDate").c_str()
+		extract_tag(exif_with_create_date_xml, "xmp:CreateDate").c_str()
+	);
+}
+
+TEST(StringUtil, should_find_tag)
+{
+	EXPECT_TRUE(
+		has_tag(exif_with_create_date_xml, "xmp:CreateDate")
+	);
+}
+
+TEST(StringUtil, should_not_find_tag)
+{
+	EXPECT_FALSE(
+		has_tag(exif_mini_xml, "xmp:CreateDate")
+	);
+}
+
+TEST(StringUtil, should_generate_date_with_correct_format)
+{
+	EXPECT_EQ(
+		_2017_02_12T13_45_40_str, 
+		convert_tm_as_string(_2017_02_12T13_45_40_TM)
+	);
+}
+
+TEST(StringUtil, should_not_generate_date_with_incorrect_format)
+{
+	EXPECT_EQ(
+		_2017_02_12T13_45_40_str,
+		convert_tm_as_string(_2017_02_12T13_45_40_TM)
 	);
 }
