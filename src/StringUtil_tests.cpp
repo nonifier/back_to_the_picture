@@ -74,14 +74,16 @@ TEST(StringUtil, should_extract_tag_with_namespace_from_xml)
 
 TEST(StringUtil, should_find_tag)
 {
-	EXPECT_TRUE(
+	EXPECT_NE(
+		std::string::npos,
 		has_tag(exif_with_create_date_xml, "xmp:CreateDate")
 	);
 }
 
 TEST(StringUtil, should_not_find_tag)
 {
-	EXPECT_FALSE(
+	EXPECT_EQ(
+		std::string::npos,
 		has_tag(exif_mini_xml, "xmp:CreateDate")
 	);
 }
