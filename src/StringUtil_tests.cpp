@@ -27,10 +27,7 @@ namespace {
 		" </x:xmpmeta>"
 		"<?xpacket end=\"w\"?>";
 
-	const std::string _2017_02_12T13_45_40_str = 
-		"2017-02-12T13:45:40.000";
-
-	const std::tm _2017_02_12T13_45_40_TM{
+	const std::tm _2017_02_12T13_45_40_TM {
 		40,   // seconds after the minute - [0, 60] including leap second
 		45,   // minutes after the hour - [0, 59]
 		13,  // hours since midnight - [0, 23]
@@ -41,7 +38,7 @@ namespace {
 		43,  // days since January 1 - [0, 365]
 		0, // daylight savings time flag
 	};
-}
+} // namepsace
 
 TEST(StringUtil, should_remove_character_and_before)
 {
@@ -92,15 +89,24 @@ TEST(StringUtil, should_not_find_tag)
 TEST(StringUtil, should_generate_date_with_correct_format)
 {
 	EXPECT_EQ(
-		_2017_02_12T13_45_40_str, 
+		"2017-02-12T13:45:40.000",
 		convert_tm_as_string(_2017_02_12T13_45_40_TM)
 	);
 }
 
-TEST(StringUtil, should_not_generate_date_with_incorrect_format)
+TEST(StringUtil, should_generate_tag_with_name_content_and_namespace)
 {
 	EXPECT_EQ(
-		_2017_02_12T13_45_40_str,
-		convert_tm_as_string(_2017_02_12T13_45_40_TM)
+		"<xmp:CreateDate>MY_DATE</xmp:CreateDate>",
+		generate_tag("CreateDate", "MY_DATE", "xmp")
 	);
 }
+
+TEST(StringUtil, should_generate_tag_with_name_content_and_no_namespace)
+{
+	EXPECT_EQ(
+		"<CreateDate>MY_DATE</CreateDate>",
+		generate_tag("CreateDate", "MY_DATE")
+	);
+}
+

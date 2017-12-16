@@ -2,6 +2,7 @@
 
 #include <string>
 #include <string_view>
+#include <ctime>
 
 namespace utils 
 {
@@ -22,5 +23,15 @@ namespace utils
 		std::string_view tag);
 
 	std::string convert_tm_as_string(
-		const tm time);
+		const std::tm time);
+
+	enum tag_type {
+		tag_type_open,
+		tag_type_selfclose,
+	};
+
+	std::string generate_tag(
+		const std::string_view tag_name,
+		const std::string_view tag_content,
+		const std::string_view tag_namespace = "");
 }
