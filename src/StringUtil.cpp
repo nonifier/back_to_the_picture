@@ -57,9 +57,11 @@ std::string extract_tag(
 	return tagStr;
 }	
 
-bool has_tag(std::string_view str, std::string_view tag)
+std::size_t has_tag(
+	const std::string_view str, 
+	const std::string_view tag)
 {
-	return str.find(tag) != std::string::npos;
+	return str.find(tag);
 }
 
 std::string convert_tm_as_string(const std::tm time)

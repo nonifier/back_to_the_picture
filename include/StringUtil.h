@@ -18,7 +18,7 @@ namespace utils
 		const std::string& packet,
 		const std::string& tagName);
 
-	bool has_tag(
+	std::size_t has_tag(
 		std::string_view str,
 		std::string_view tag);
 
